@@ -9,7 +9,6 @@ const Register = () => {
   const navigate = useNavigate();
 
   const handleRegister = () => {
-    
     Swal.fire({
       title: "Registered!",
       text: "You have successfully registered 🎉",
@@ -20,17 +19,11 @@ const Register = () => {
 
   // Validation Schema
   const validationSchema = Yup.object({
-    firstName: Yup.string()
-      .min(2, "Too short")
-      .required("First name required"),
+    firstName: Yup.string().min(2, "Too short").required("First name required"),
 
-    lastName: Yup.string()
-      .min(2, "Too short")
-      .required("Last name required"),
+    lastName: Yup.string().min(2, "Too short").required("Last name required"),
 
-    email: Yup.string()
-      .email("Invalid email")
-      .required("Email required"),
+    email: Yup.string().email("Invalid email").required("Email required"),
 
     mobile: Yup.string()
       .matches(/^[0-9]{10}$/, "Must be 10 digits")
@@ -58,142 +51,133 @@ const Register = () => {
     validationSchema,
 
     onSubmit: (values) => {
-      // ✅ Save full name
-      const fullName = `${values.firstName} ${values.lastName}`;
-      localStorage.setItem("username", fullName);
+      const userData = {
+        fullName: `${values.firstName} ${values.lastName}`,
+        number: values.mobile,
+        email: values.email,
+        password: values.password,
+      };
 
-      console.log(values);
-      setSuccess(true);
+      localStorage.setItem("user", JSON.stringify(userData));
 
-      // Redirect after 1.5 sec
-      setTimeout(() => {
-        navigate("/");
-        window.location.reload();
-      }, 1000);
+      Swal.fire({
+        title: "Registered!",
+        text: "You have successfully registered 🎉",
+        icon: "success",
+        confirmButtonText: "OK",
+      }).then(() => {
+        navigate("/signin"); // 👉 redirect to login page
+      });
     },
   });
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-        <form
-          onSubmit={formik.handleSubmit}
-          className="bg-white p-8 shadow-lg rounded-lg w-96"
-        >
-          <h2 className="text-2xl font-bold mb-4 text-center">
-            Register
-          </h2>
+      <form
+        onSubmit={formik.handleSubmit}
+        className="bg-white p-8 shadow-lg rounded-lg w-96"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
 
-          {/* First + Last Name */}
-          <div className="flex gap-3 mb-2">
-            <div className="w-1/2">
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                className="w-full border p-2 rounded"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.firstName}
-              />
-              {formik.touched.firstName && formik.errors.firstName && (
-                <p className="text-red-500 text-sm">
-                  {formik.errors.firstName}
-                </p>
-              )}
-            </div>
-
-            <div className="w-1/2">
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                className="w-full border p-2 rounded"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.lastName}
-              />
-              {formik.touched.lastName && formik.errors.lastName && (
-                <p className="text-red-500 text-sm">
-                  {formik.errors.lastName}
-                </p>
-              )}
-            </div>
+        {/* First + Last Name */}
+        <div className="flex gap-3 mb-2">
+          <div className="w-1/2">
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              className="w-full border p-2 rounded"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.firstName}
+            />
+            {formik.touched.firstName && formik.errors.firstName && (
+              <p className="text-red-500 text-sm">{formik.errors.firstName}</p>
+            )}
           </div>
 
-          {/* Email */}
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            className="w-full border p-2 mb-1 rounded"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-          />
-          {formik.touched.email && formik.errors.email && (
-            <p className="text-red-500 text-sm mb-2">
-              {formik.errors.email}
-            </p>
-          )}
-
-          {/* Mobile */}
-          <input
-            type="tel"
-            name="mobile"
-            placeholder="Mobile Number"
-            className="w-full border p-2 mb-1 rounded"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.mobile}
-          />
-          {formik.touched.mobile && formik.errors.mobile && (
-            <p className="text-red-500 text-sm mb-2">
-              {formik.errors.mobile}
-            </p>
-          )}
-
-          {/* Password */}
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="w-full border p-2 mb-1 rounded"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.password}
-          />
-          {formik.touched.password && formik.errors.password && (
-            <p className="text-red-500 text-sm mb-2">
-              {formik.errors.password}
-            </p>
-          )}
-
-          {/* Confirm Password */}
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            className="w-full border p-2 mb-1 rounded"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.confirmPassword}
-          />
-          {formik.touched.confirmPassword &&
-            formik.errors.confirmPassword && (
-              <p className="text-red-500 text-sm mb-2">
-                {formik.errors.confirmPassword}
-              </p>
+          <div className="w-1/2">
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              className="w-full border p-2 rounded"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.lastName}
+            />
+            {formik.touched.lastName && formik.errors.lastName && (
+              <p className="text-red-500 text-sm">{formik.errors.lastName}</p>
             )}
+          </div>
+        </div>
 
-          <button
-            onClick={handleRegister}
-            type="submit"
-            disabled={!formik.isValid || formik.isSubmitting}
-            className="bg-indigo-600 text-white w-full py-2 rounded hover:bg-indigo-700 disabled:bg-gray-400"
-          >
-            Register
-          </button>
-        </form>
+        {/* Email */}
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          className="w-full border p-2 mb-1 rounded"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.email}
+        />
+        {formik.touched.email && formik.errors.email && (
+          <p className="text-red-500 text-sm mb-2">{formik.errors.email}</p>
+        )}
+
+        {/* Mobile */}
+        <input
+          type="number"
+          name="mobile"
+          placeholder="Mobile Number"
+          className="w-full border p-2 mb-1 rounded"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.mobile}
+        />
+        {formik.touched.mobile && formik.errors.mobile && (
+          <p className="text-red-500 text-sm mb-2">{formik.errors.mobile}</p>
+        )}
+
+        {/* Password */}
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="w-full border p-2 mb-1 rounded"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.password}
+        />
+        {formik.touched.password && formik.errors.password && (
+          <p className="text-red-500 text-sm mb-2">{formik.errors.password}</p>
+        )}
+
+        {/* Confirm Password */}
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          className="w-full border p-2 mb-1 rounded"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.confirmPassword}
+        />
+        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+          <p className="text-red-500 text-sm mb-2">
+            {formik.errors.confirmPassword}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={!formik.isValid || formik.isSubmitting}
+          className="bg-indigo-600 text-white w-full py-2 rounded hover:bg-indigo-700 disabled:bg-gray-400"
+        >
+          Register
+        </button>
+      </form>
     </div>
   );
 };

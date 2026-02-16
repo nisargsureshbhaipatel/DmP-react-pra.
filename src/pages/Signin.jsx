@@ -22,11 +22,8 @@ const Login = () => {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             const phoneRegex = /^[0-9]{10}$/;
 
-            return (
-              emailRegex.test(value) ||
-              phoneRegex.test(value)
-            );
-          }
+            return emailRegex.test(value) || phoneRegex.test(value);
+          },
         ),
 
       password: Yup.string()
@@ -35,12 +32,25 @@ const Login = () => {
     }),
 
     onSubmit: (values) => {
-      localStorage.setItem("username", values.login);
+      const savedUser = JSON.parse(localStorage.getItem("user"));
 
-      alert("Login Successful");
+      if (!savedUser) {
+        alert("No user found");
+        return;
+      }
 
-      navigate("/");
-      window.location.reload();
+      const loginMatch =
+        values.login === savedUser.email || values.login == savedUser.number;
+
+      const passwordMatch = values.password === savedUser.password;
+
+      if (loginMatch && passwordMatch) {
+        localStorage.setItem("isLoggedIn", "true");
+
+        navigate("/");
+      } else {
+        alert("Invalid credentials");
+      }
     },
   });
 
@@ -50,9 +60,7 @@ const Login = () => {
         onSubmit={formik.handleSubmit}
         className="bg-white p-8 shadow-lg rounded-lg w-96"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Login
-        </h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
         <input
           type="text"
@@ -64,12 +72,9 @@ const Login = () => {
           value={formik.values.login}
         />
 
-        {formik.touched.login &&
-          formik.errors.login && (
-            <p className="text-red-500 text-sm mb-2">
-              {formik.errors.login}
-            </p>
-          )}
+        {formik.touched.login && formik.errors.login && (
+          <p className="text-red-500 text-sm mb-2">{formik.errors.login}</p>
+        )}
 
         <input
           type="password"
@@ -81,12 +86,9 @@ const Login = () => {
           value={formik.values.password}
         />
 
-        {formik.touched.password &&
-          formik.errors.password && (
-            <p className="text-red-500 text-sm mb-2">
-              {formik.errors.password}
-            </p>
-          )}
+        {formik.touched.password && formik.errors.password && (
+          <p className="text-red-500 text-sm mb-2">{formik.errors.password}</p>
+        )}
 
         <button
           type="submit"

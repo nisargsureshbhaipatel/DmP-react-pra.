@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, ShoppingCart, Search } from "lucide-react";
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
+ const [userDetails, setUserDetails] = useState(null);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("username");
+    const savedUser = localStorage.getItem("userDetails");
+
     if (savedUser) {
-      setUser(savedUser);
+      setUserDetails(JSON.parse(savedUser));
     }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("username");
-    setUser(null); // ✅ React way (no reload)
+    localStorage.removeItem("userDetails");
+    setUserDetails(null);
+    navigate("/signin");
   };
+
 
   return (
     <nav className="bg-gray-300 shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-
           {/* Logo */}
           <span className="text-2xl font-bold text-indigo-600">
             📚 BookVerse
@@ -30,10 +35,24 @@ const Navbar = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="hover:text-indigo-600">Home</Link>
-            <Link to="/explore" className="hover:text-indigo-600">Explore</Link>
-            <Link to="/sell" className="hover:text-indigo-600">Sell Books</Link>
-            <Link to="/categories" className="hover:text-indigo-600">Categories</Link>
+            <Link to="/" className="hover:text-indigo-600 active:scale-95">
+              Home
+            </Link>
+            <Link
+              to="/explore"
+              className="hover:text-indigo-600 active:scale-95"
+            >
+              Explore
+            </Link>
+            <Link to="/sell" className="hover:text-indigo-600 active:scale-95 ">
+              Sell Books
+            </Link>
+            <Link
+              to="/categories"
+              className="hover:text-indigo-600  active:scale-95"
+            >
+              Categories
+            </Link>
           </div>
 
           {/* Search */}
@@ -47,32 +66,41 @@ const Navbar = () => {
           </div>
 
           {/* Right Side */}
-          <div className="hidden md:flex items-center gap-4">
-            <ShoppingCart className="cursor-pointer hover:text-indigo-600" />
+          <div className="flex items-center gap-4">
 
-            {user ? (
-              <>
-                <span>Hi, {user} 👋</span>
-                <button onClick={handleLogout} className="text-red-600">
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/register">
-                  <button className="border border-indigo-600 px-4 py-2 rounded-lg">
-                    Register
-                  </button>
-                </Link>
+  {!userDetails ? (
+    <>
+      <button
+        onClick={() => navigate("/register")}
+        className="border border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg font-medium hover:bg-indigo-50 transition"
+      >
+        Register
+      </button>
 
-                <Link to="/signin">
-                  <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg">
-                    Sign In
-                  </button>
-                </Link>
-              </>
-            )}
-          </div>
+      <button
+        onClick={() => navigate("/signin")}
+        className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition"
+      >
+        Sign In
+      </button>
+    </>
+  ) : (
+    <>
+      <span className="text-gray-700 font-medium">
+        Hi, <span className="text-indigo-600">{userDetails.fullName}</span> 👋
+      </span>
+
+      <button
+        onClick={handleLogout}
+        className="bg-red-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-600 transition"
+      >
+        Logout
+      </button>
+    </>
+  )}
+
+</div>
+
 
           {/* Mobile Button */}
           <div className="md:hidden">
@@ -80,7 +108,6 @@ const Navbar = () => {
               {open ? <X /> : <Menu />}
             </button>
           </div>
-
         </div>
       </div>
 
@@ -94,7 +121,7 @@ const Navbar = () => {
 
           {user ? (
             <>
-              <span>Hi, {user}</span>
+              <span>Hi, {}</span>
               <button onClick={handleLogout}>Logout</button>
             </>
           ) : (
